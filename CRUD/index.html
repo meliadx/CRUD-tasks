@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas com Timer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container mt-5">
+        <div class="text-center">
+            <h1>CRUD - Lista de tarefas</h1>
+        </div>
+
+        <div class="task-container mt-4 p-4">
+            <form id="taskForm">
+                <div class="mb-3">
+                    <label for="taskInput" class="form-label">Tarefa</label>
+                    <input type="text" class="form-control" id="taskInput" placeholder="Digite sua tarefa">
+                </div>
+                <div class="mb-3">
+                    <label for="timeInput" class="form-label">Tempo (minutos)</label>
+                    <input type="number" class="form-control" id="timeInput" placeholder="Defina um tempo">
+                </div>
+                <button type="submit" class="btn btn-custom">Adicionar Tarefa</button>
+            </form>
+        </div>
+
+        <div class="task-container mt-4 p-4">
+            <h2>Suas Tarefas</h2>
+            <ul class="list-group" id="taskList">
+                <!-- Lista de tarefas será gerada aqui -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const taskInput = document.getElementById('taskInput').value;
+            const timeInput = document.getElementById('timeInput').value;
+
+            if(taskInput && timeInput) {
+                addTask(taskInput, timeInput);
+
+                document.getElementById('taskInput').value = '';
+                document.getElementById('timeInput').value = '';
+            }
+        });
+
+        function addTask(taskText, taskTime) {
+            const taskList = document.getElementById('taskList');
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            
+            listItem.innerHTML = `
+                <span class="task-text">${taskText}</span> - <span class="badge rounded-pill">${taskTime} min</span>
+                <div>
+                    <button class="btn btn-edit btn-sm">Editar</button>
+                    <button class="btn btn-danger btn-sm ms-2">Remover</button>
+                </div>
+            `;
+
+            // Função para remover tarefa
+            listItem.querySelector('.btn-danger').addEventListener('click', function() {
+                taskList.removeChild(listItem);
+            });
+
+            // Função para editar tarefa
+            listItem.querySelector('.btn-edit').addEventListener('click', function() {
+                const currentTask = listItem.querySelector('.task-text').textContent;
+                const currentTime = listItem.querySelector('.badge').textContent.split(' ')[0];
+
+                document.getElementById('taskInput').value = currentTask;
+                document.getElementById('timeInput').value = currentTime;
+
+                taskList.removeChild(listItem);
+            });
+
+            taskList.appendChild(listItem);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
