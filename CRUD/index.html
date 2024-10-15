@@ -6,28 +6,53 @@
     <title>Lista de Tarefas com Timer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
+    <style>
+        /* Estilo para esconder o formulário inicialmente */
+        #taskFormContainer {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
     <div class="container mt-5">
         <div class="text-center">
-            <h1>CRUD - Lista de tarefas</h1>
+            <h1>CRUD - Lista de Tarefas</h1>
         </div>
 
-        <div class="task-container mt-4 p-4">
+        <!-- Botão para mostrar o formulário -->
+        <div class="text-center mt-4">
+            <button id="toggleFormBtn" class="btn btn-primary">Adicionar Tarefa</button>
+        </div>
+
+        <!-- Formulário de tarefa (escondido inicialmente) -->
+        <div id="taskFormContainer" class="task-container mt-4 p-4">
             <form id="taskForm">
                 <div class="mb-3">
-                    <label for="taskInput" class="form-label">Tarefa</label>
-                    <input type="text" class="form-control" id="taskInput" placeholder="Digite sua tarefa">
+                    <label for="taskName" class="form-label">Nome da Tarefa</label>
+                    <input type="text" class="form-control" id="taskName" placeholder="Nome da tarefa" required>
                 </div>
                 <div class="mb-3">
-                    <label for="timeInput" class="form-label">Tempo (minutos)</label>
-                    <input type="number" class="form-control" id="timeInput" placeholder="Defina um tempo">
+                    <label for="timeInput" class="form-label">Tempo (formato hh:mm)</label>
+                    <input type="time" class="form-control" id="timeInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="taskCategory" class="form-label">Categoria</label>
+                    <input type="text" class="form-control" id="taskCategory" placeholder="Ex: Trabalho, Lazer" required>
+                </div>
+                <div class="mb-3">
+                    <label for="taskColor" class="form-label">Cor da Tarefa</label>
+                    <input type="color" class="form-control form-control-color" id="taskColor" value="#000000">
+                </div>
+                <div class="mb-3">
+                    <label for="taskDescription" class="form-label">Descrição (opcional)</label>
+                    <textarea class="form-control" id="taskDescription" placeholder="Descrição da tarefa"></textarea>
                 </div>
                 <button type="submit" class="btn btn-custom">Adicionar Tarefa</button>
             </form>
         </div>
 
+        <!-- Lista de Tarefas -->
         <div class="task-container mt-4 p-4">
             <h2>Suas Tarefas</h2>
             <ul class="list-group" id="taskList">
@@ -37,27 +62,49 @@
     </div>
 
     <script>
-        document.getElementById('taskForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const taskInput = document.getElementById('taskInput').value;
-            const timeInput = document.getElementById('timeInput').value;
-
-            if(taskInput && timeInput) {
-                addTask(taskInput, timeInput);
-
-                document.getElementById('taskInput').value = '';
-                document.getElementById('timeInput').value = '';
+        // Função para alternar a visibilidade do formulário
+        document.getElementById('toggleFormBtn').addEventListener('click', function() {
+            const formContainer = document.getElementById('taskFormContainer');
+            if (formContainer.style.display === 'none') {
+                formContainer.style.display = 'block';
+            } else {
+                formContainer.style.display = 'none';
             }
         });
 
-        function addTask(taskText, taskTime) {
+        // Função para adicionar tarefas
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const taskName = document.getElementById('taskName').value;
+            const timeInput = document.getElementById('timeInput').value;
+            const taskCategory = document.getElementById('taskCategory').value;
+            const taskColor = document.getElementById('taskColor').value;
+            const taskDescription = document.getElementById('taskDescription').value;
+
+            if(taskName && timeInput && taskCategory) {
+                addTask(taskName, timeInput, taskCategory, taskColor, taskDescription);
+
+                // Limpar os campos do formulário
+                document.getElementById('taskForm').reset();
+
+                // Esconder o formulário após a adição da tarefa
+                document.getElementById('taskFormContainer').style.display = 'none';
+            }
+        });
+
+        // Função para adicionar tarefa na lista
+        function addTask(name, time, category, color, description) {
             const taskList = document.getElementById('taskList');
             const listItem = document.createElement('li');
             listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-            
+            listItem.style.backgroundColor = color;
+
             listItem.innerHTML = `
-                <span class="task-text">${taskText}</span> - <span class="badge rounded-pill">${taskTime} min</span>
+                <div>
+                    <span class="fw-bold">${name}</span> - <span class="text-muted">${category}</span><br>
+                    <span>${time}</span> - ${description ? `<small>${description}</small>` : ''}
+                </div>
                 <div>
                     <button class="btn btn-edit btn-sm">Editar</button>
                     <button class="btn btn-danger btn-sm ms-2">Remover</button>
@@ -71,13 +118,21 @@
 
             // Função para editar tarefa
             listItem.querySelector('.btn-edit').addEventListener('click', function() {
-                const currentTask = listItem.querySelector('.task-text').textContent;
-                const currentTime = listItem.querySelector('.badge').textContent.split(' ')[0];
+                const currentTaskName = name;
+                const currentTaskTime = time;
+                const currentTaskCategory = category;
+                const currentTaskColor = color;
+                const currentTaskDescription = description;
 
-                document.getElementById('taskInput').value = currentTask;
-                document.getElementById('timeInput').value = currentTime;
+                document.getElementById('taskName').value = currentTaskName;
+                document.getElementById('timeInput').value = currentTaskTime;
+                document.getElementById('taskCategory').value = currentTaskCategory;
+                document.getElementById('taskColor').value = currentTaskColor;
+                document.getElementById('taskDescription').value = currentTaskDescription;
 
                 taskList.removeChild(listItem);
+                // Mostrar o formulário para edição
+                document.getElementById('taskFormContainer').style.display = 'block';
             });
 
             taskList.appendChild(listItem);
