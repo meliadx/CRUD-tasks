@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Tarefas com Timer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
-    <style>
-        /* Estilo para esconder o formulário inicialmente */
-        #taskFormContainer {
-            display: none;
-        }
-    </style>
 </head>
 <body>
 
@@ -25,16 +19,16 @@
             <button id="toggleFormBtn" class="btn btn-primary">Adicionar Tarefa</button>
         </div>
 
-        <!-- Formulário de tarefa (escondido inicialmente) -->
+        <!-- Formulário de tarefa -->
         <div id="taskFormContainer" class="task-container mt-4 p-4">
             <form id="taskForm">
                 <div class="mb-3">
-                    <label for="taskName" class="form-label">Nome da Tarefa</label>
-                    <input type="text" class="form-control" id="taskName" placeholder="Nome da tarefa" required>
+                    <label for="taskTitle" class="form-label">Título da Tarefa</label>
+                    <input type="text" class="form-control" id="taskTitle" placeholder="Nome da tarefa" required>
                 </div>
                 <div class="mb-3">
-                    <label for="timeInput" class="form-label">Tempo (formato hh:mm)</label>
-                    <input type="time" class="form-control" id="timeInput" required>
+                    <label for="taskTime" class="form-label">Tempo (formato hh:mm)</label>
+                    <input type="time" class="form-control" id="taskTime" required>
                 </div>
                 <div class="mb-3">
                     <label for="taskCategory" class="form-label">Categoria</label>
@@ -76,14 +70,14 @@
         document.getElementById('taskForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const taskName = document.getElementById('taskName').value;
-            const timeInput = document.getElementById('timeInput').value;
+            const taskTitle = document.getElementById('taskTitle').value;
+            const taskTime = document.getElementById('taskTime').value;
             const taskCategory = document.getElementById('taskCategory').value;
             const taskColor = document.getElementById('taskColor').value;
             const taskDescription = document.getElementById('taskDescription').value;
 
-            if(taskName && timeInput && taskCategory) {
-                addTask(taskName, timeInput, taskCategory, taskColor, taskDescription);
+            if(taskTitle && taskTime && taskCategory) {
+                addTask(taskTitle, taskTime, taskCategory, taskColor, taskDescription);
 
                 // Limpar os campos do formulário
                 document.getElementById('taskForm').reset();
@@ -118,14 +112,14 @@
 
             // Função para editar tarefa
             listItem.querySelector('.btn-edit').addEventListener('click', function() {
-                const currentTaskName = name;
+                const currenttaskTitle = name;
                 const currentTaskTime = time;
                 const currentTaskCategory = category;
                 const currentTaskColor = color;
                 const currentTaskDescription = description;
 
-                document.getElementById('taskName').value = currentTaskName;
-                document.getElementById('timeInput').value = currentTaskTime;
+                document.getElementById('taskTitle').value = currenttaskTitle;
+                document.getElementById('taskTime').value = currentTaskTime;
                 document.getElementById('taskCategory').value = currentTaskCategory;
                 document.getElementById('taskColor').value = currentTaskColor;
                 document.getElementById('taskDescription').value = currentTaskDescription;
