@@ -2,27 +2,42 @@ body {
     background-color: #1e1e2f;
     color: #fff;
 }
+
+/* Configuração da estilização do header */
+.custom-header {
+    background-color: #1f1f1f;
+    padding: 20px 40px;
+}
+
+.custom-header .container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100px;
+}
+
+.custom-header .logo img {
+    height: 50px;
+}
+
+.container {
+    margin-top: 30px;
+}
 .task-container {
-    background-color: #29293d;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: #2a2a3d;
+    border-radius: 8px;
 }
 #taskFormContainer {
     display: none;
 }
-.btn-custom {
-    background-color: #6f42c1;
-    color: #fff;
-}
-.btn-danger {
-    background-color: #d63384;
-    color: #fff;
-}
 .list-group-item {
-    background-color: #3a3a5a;
+    background-color: #2a2a3d; 
     color: #fff;
 }
-.badge {
-    background-color: #9b59b6;
+.btn-custom {
+    background-color: #6c5ce7; 
+    color: #fff;
+}
+.btn-custom:hover {
+    background-color: #5945c3;
 }
