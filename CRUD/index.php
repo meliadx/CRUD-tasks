@@ -8,38 +8,46 @@ $database = 'crudtasks_db'; // nome do banco de dados
 
 /* Conexão com o banco de dados */
 $conn = new mysqli($host, $username, $password, $database)
-    or die("Não foi possível conectar: " . mysqli_error());
+    or die("Não foi possível conectar: " . mysqli_error($conn));
 
 /* CREATE/UPDATE: Colocar nova tarefa ao banco de dados */
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    /* Adiciona cada item no formulário com o método post */
+    /* Adiciona cada item do formulário com o método post */
+    $taskId = $_POST['editTaskId'];
     $taskTitle = $_POST['taskTitle'];
     $taskTime = $_POST['taskTime'];
     $taskCategory = $_POST['taskCategory'];
     $taskColor = $_POST['taskColor'];
     $taskDescription = $_POST['taskDescription'];
 
-    /* Adiciona os valores das váriaveis nas  células da tabela */
-    $sql = "INSERT INTO crudtasks_table (taskTitle, taskTime, taskCategory, taskColor, taskDescription) 
-    VALUES ('$taskTitle', '$taskTime', '$taskCategory', '$taskColor', '$taskDescription')"; 
+    /* Adiciona os valores presentes nas váriaveis nas  células da tabela */
+    if ($taskId) { // UPDATE: editar uma tarefa já existente
+        $sql = "UPDATE crudtasks_table SET taskTitle='$taskTitle', taskTime='$taskTime', taskCategory='$taskCategory', taskColor='$taskColor', taskDescription='$taskDescription' WHERE id=$taskId";
+    } 
+    else { // CREATE: criar uma tarefa
+        $sql = "INSERT INTO crudtasks_table (taskTitle, taskTime, taskCategory, taskColor, taskDescription) 
+        VALUES ('$taskTitle', '$taskTime', '$taskCategory', '$taskColor', '$taskDescription')";     
+    }
 
     /* Retorna à página após criar/editar tarefa */
     if ($conn->query($sql) === TRUE) {
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
-    } else {
-        echo "Erro: " . mysqli_error();
+    } else { // Em caso de erro
+        echo "<p class='alert alert-danger'>Erro ao salvar a tarefa: " . $conn->error . "</p>";
     }
 }
 
 /* DELETE: deletar uma tarefa pegando o id usando o get */
-if (isset($_GET['deletetaskId'])) {
-    $taskId = $_GET['deletetaskId'];
-    $sql = "DELETE FROM crudtasks_table WHERE id=$taskId"; // encontra id selecionado
+if (isset($_GET['deleteTaskId'])) {
+    $taskId = $_GET['deleteTaskId'];
+    $sql = "DELETE FROM crudtasks_table WHERE id=$taskId";
     $conn->query($sql);
+    header("Location: " . $_SERVER['PHP_SELF']); // Redireciona após exclusão
+    exit;
 }
 
-/* Função para leitura das tarefas */
+/* READ: Função para leitura das tarefas */
 function readtask($conn) {
     $sql = "SELECT * FROM crudtasks_table";
     return $conn->query($sql);
@@ -81,7 +89,7 @@ $crudtasks_table = readtask($conn);
                 <!-- Formulário de tarefa -->
                 <div id="taskFormContainer" class="task-container mt-4 p-4">
                     <form method="POST" id="taskForm">
-                        <input type="hidden" name="editTaskId" id="editTaskId" value="">
+                        <input type="hidden" name="editTaskId" id="editTaskId" value=""> <!---->
                         <div class="mb-3">
                             <label for="taskTitle" class="form-label">Título da Tarefa</label>
                             <input type="text" class="form-control" name="taskTitle" id="taskTitle" placeholder="Nome da tarefa" required>
@@ -123,7 +131,7 @@ $crudtasks_table = readtask($conn);
                                     echo '</div>';
                                     echo '<div>';
                                     echo '<button class="btn btn-edit btn-sm btn-secondary" data-id="' . $row['id'] . '" data-title="' . $row['taskTitle'] . '" data-time="' . $row['taskTime'] . '" data-category="' . $row['taskCategory'] . '" data-color="' . $row['taskColor'] . '" data-description="' . $row['taskDescription'] . '">Editar</button>';
-                                    echo '<a href="?removeTaskId=' . $row['id'] . '" class="btn btn-danger btn-sm ms-2">Remover</a>';
+                                    echo '<a href="?deleteTaskId=' . $row['id'] . '" class="btn btn-danger btn-sm ms-2">Deletar</a>';
                                     echo '</div>';
                                     echo '</li>';
                                 }
@@ -143,6 +151,20 @@ $crudtasks_table = readtask($conn);
     document.getElementById('btn-taskForm').addEventListener('click', function() {
         var formContainer = document.getElementById('taskFormContainer');
         formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
+    });
+
+        // Script para preencher formulário com dados de tarefa para edição
+        document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function() {
+            document.getElementById('editTaskId').value = this.dataset.id;
+            document.getElementById('taskTitle').value = this.dataset.title;
+            document.getElementById('taskTime').value = this.dataset.time;
+            document.getElementById('taskCategory').value = this.dataset.category;
+            document.getElementById('taskColor').value = this.dataset.color;
+            document.getElementById('taskDescription').value = this.dataset.description;
+
+            document.getElementById('taskFormContainer').style.display = 'block';
+        });
     });
 </script>
 
