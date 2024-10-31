@@ -1,15 +1,26 @@
 body {
-    background-color: #1e1e2f;
+    background-image: url('media/images/sparklist-background.gif');
     color: #fff;
 }
+.custom-header{
+    background-color: #2b1f5fbb;
+    display: flex;
+    justify-content: center;
+}
+
 .task-container {
     background-color: #29293d;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px #0000004d;
 }
 #taskFormContainer {
     display: none;
+}
+
+#btn-taskForm {
+    border-radius: 100%;
+    
 }
 .btn-custom {
     background-color: #6f42c1;
