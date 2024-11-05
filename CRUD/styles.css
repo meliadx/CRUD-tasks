@@ -7,33 +7,3 @@ body {
     display: flex;
     justify-content: center;
 }
-
-.task-container {
-    background-color: #29293d;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px #0000004d;
-}
-#taskFormContainer {
-    display: none;
-}
-
-#btn-taskForm {
-    border-radius: 100%;
-    
-}
-.btn-custom {
-    background-color: #6f42c1;
-    color: #fff;
-}
-.btn-danger {
-    background-color: #d63384;
-    color: #fff;
-}
-.list-group-item {
-    background-color: #3a3a5a;
-    color: #fff;
-}
-.badge {
-    background-color: #9b59b6;
-}

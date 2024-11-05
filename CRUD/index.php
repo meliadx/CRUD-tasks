@@ -6,13 +6,12 @@ $username = 'root'; // nome de usuário para acessar mysql
 $password = ''; // senha de acesso
 $database = 'crudtasks_db'; // nome do banco de dados
 
-/* Conexão com o banco de dados */
 $conn = new mysqli($host, $username, $password, $database)
     or die("Não foi possível conectar: " . mysqli_error($conn));
 
-/* CREATE/UPDATE: Colocar nova tarefa ao banco de dados */
+/* CREATE/UPDATE: Colocar nova tarefa no banco de dados */
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    /* Adiciona cada item do formulário com o método post */
+        /* Adiciona cada item do formulário com o método post */
     $taskId = $_POST['editTaskId'];
     $taskTitle = $_POST['taskTitle'];
     $taskTime = $_POST['taskTime'];
@@ -20,30 +19,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $taskColor = $_POST['taskColor'];
     $taskDescription = $_POST['taskDescription'];
 
-    /* Adiciona os valores presentes nas váriaveis nas  células da tabela */
+    /* Adiciona os valores presentes nas variáveis nas células da tabela */
     if ($taskId) { // UPDATE: editar uma tarefa já existente
-        $sql = "UPDATE crudtasks_table SET taskTitle='$taskTitle', taskTime='$taskTime', taskCategory='$taskCategory', taskColor='$taskColor', taskDescription='$taskDescription' WHERE id=$taskId";
-    } 
-    else { // CREATE: criar uma tarefa
+        $sql = "UPDATE crudtasks_table 
+                SET taskTitle='$taskTitle', taskTime='$taskTime', taskCategory='$taskCategory', 
+                    taskColor='$taskColor', taskDescription='$taskDescription' 
+                WHERE id=$taskId";
+    } else { // CREATE: criar uma tarefa
         $sql = "INSERT INTO crudtasks_table (taskTitle, taskTime, taskCategory, taskColor, taskDescription) 
-        VALUES ('$taskTitle', '$taskTime', '$taskCategory', '$taskColor', '$taskDescription')";     
+                VALUES ('$taskTitle', '$taskTime', '$taskCategory', '$taskColor', '$taskDescription')";
     }
 
     /* Retorna à página após criar/editar tarefa */
     if ($conn->query($sql) === TRUE) {
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
-    } else { // Em caso de erro
-        echo "<p class='alert alert-danger'>Erro ao salvar a tarefa: " . $conn->error . "</p>";
+    } else {
+        echo "<p>Erro ao salvar a tarefa: " . $conn->error . "</p>";
     }
 }
+
 
 /* DELETE: deletar uma tarefa pegando o id usando o get */
 if (isset($_GET['deleteTaskId'])) {
     $taskId = $_GET['deleteTaskId'];
     $sql = "DELETE FROM crudtasks_table WHERE id=$taskId";
     $conn->query($sql);
-    header("Location: " . $_SERVER['PHP_SELF']); // Redireciona após exclusão
+    header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
@@ -56,7 +58,7 @@ function readtask($conn) {
 $crudtasks_table = readtask($conn);
 ?>
 
-<!--HTML-->
+<!-- HTML -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -68,7 +70,6 @@ $crudtasks_table = readtask($conn);
 </head>
 <body>
 
-
 <header class="custom-header">
     <div class="container d-flex justify-content-end align-items-center">
         <div class="logo">
@@ -77,67 +78,59 @@ $crudtasks_table = readtask($conn);
     </div>
 </header>
 
-<main>
-<div class="container">
-        <div class="row">
-            <!-- Coluna da esquerda - Formulário -->
-            <div class="col-md-6">
-                <div class="text-center mt-4">
-                    <button id="btn-taskForm" class="btn btn-primary btn-lg">+</button>
-                </div>
-
-                <!-- Formulário de tarefa -->
-                <div id="taskFormContainer" class="task-container mt-4 p-4">
-                    <form method="POST" id="taskForm">
-                        <input type="hidden" name="editTaskId" id="editTaskId" value=""> <!---->
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12 p-4" style="background-color: #4b2c77; border-radius: 8px;">
+            <div class="row">
+                <!-- Formulário -->
+                <div class="col-md-6 p-3">
+                    <form method="POST">
+                        <input type="hidden" name="editTaskId" id="editTaskId" value="">
                         <div class="mb-3">
                             <label for="taskTitle" class="form-label">Título da Tarefa</label>
-                            <input type="text" class="form-control" name="taskTitle" id="taskTitle" placeholder="Nome da tarefa" required>
+                            <input type="text" name="taskTitle" id="taskTitle" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="taskTime" class="form-label">Tempo (formato hh:mm)</label>
-                            <input type="time" class="form-control" name="taskTime" id="taskTime" required>
+                            <input type="time" name="taskTime" id="taskTime" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="taskCategory" class="form-label">Categoria</label>
-                            <input type="text" class="form-control" name="taskCategory" id="taskCategory" placeholder="Ex: Trabalho, Lazer" required>
+                            <input type="text" name="taskCategory" id="taskCategory" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="taskColor" class="form-label">Cor da Tarefa</label>
-                            <input type="color" class="form-control form-control-color" name="taskColor" id="taskColor" value="#000000">
+                            <input type="color" name="taskColor" id="taskColor" class="form-control form-control-color" value="#000000">
                         </div>
                         <div class="mb-3">
                             <label for="taskDescription" class="form-label">Descrição (opcional)</label>
-                            <textarea class="form-control" name="taskDescription" id="taskDescription" placeholder="Descrição da tarefa"></textarea>
+                            <textarea name="taskDescription" id="taskDescription" class="form-control"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-custom">Adicionar Tarefa</button>
+                        <button type="submit" class="btn btn-primary">Adicionar Tarefa</button>
                     </form>
                 </div>
-            </div>
 
-            <!-- Coluna da direita - Lista de Tarefas -->
-            <div class="col-md-6">
-                <div class="task-container mt-4 p-4">
-                    <h2>Suas Tarefas</h2>
-                    <ul class="list-group" id="taskList">
+                <!-- Lista de Tarefas -->
+                <div class="col-md-6 p-3">
+                    <h2 class="text-center">Suas Tarefas</h2>
+                    <ul class="list-group">
                         <?php
-                            /* Exibe as tarefas em forma de lista */
-                            if ($crudtasks_table->num_rows > 0) { // Verifica a tabela possui pelo menos um registro
-                                while ($row = $crudtasks_table->fetch_assoc()) { // A função fetch_assoc() retorna cada linha
-                                    echo '<li class="list-group-item d-flex justify-content-between align-items-center" style="background-color:' . $row['taskColor'] . ';">';
-                                    echo '<div>';
-                                    echo '<span class="fw-bold">' . $row['taskTitle'] . '</span> - <span class="text-muted">' . $row['taskCategory'] . '</span><br>';
-                                    echo '<span>' . $row['taskTime'] . '</span> - ' . ($row['taskDescription'] ? '<small>' . $row['taskDescription'] . '</small>' : '');
-                                    echo '</div>';
-                                    echo '<div>';
-                                    echo '<button class="btn btn-edit btn-sm btn-secondary" data-id="' . $row['id'] . '" data-title="' . $row['taskTitle'] . '" data-time="' . $row['taskTime'] . '" data-category="' . $row['taskCategory'] . '" data-color="' . $row['taskColor'] . '" data-description="' . $row['taskDescription'] . '">Editar</button>';
-                                    echo '<a href="?deleteTaskId=' . $row['id'] . '" class="btn btn-danger btn-sm ms-2">Deletar</a>';
-                                    echo '</div>';
-                                    echo '</li>';
-                                }
-                            } else {
-                                echo '<li class="list-group-item">Nenhuma tarefa encontrada.</li>';
+                        if ($crudtasks_table->num_rows > 0) {
+                            while ($row = $crudtasks_table->fetch_assoc()) {
+                                echo '<li class="list-group-item d-flex justify-content-between align-items-start" style="background-color:' . $row['taskColor'] . ';">';
+                                echo '<div>';
+                                echo '<span class="fw-bold">' . $row['taskTitle'] . '</span> - <span class="text-muted">' . $row['taskCategory'] . '</span><br>';
+                                echo '<small class="text-secondary">' . $row['taskTime'] . '</small> - ' . ($row['taskDescription'] ? '<small class="text-secondary">' . $row['taskDescription'] . '</small>' : '');
+                                echo '</div>';
+                                echo '<div>';
+                                echo '<button class="btn btn-sm btn-warning btn-edit me-2" data-id="' . $row['id'] . '" data-title="' . $row['taskTitle'] . '" data-time="' . $row['taskTime'] . '" data-category="' . $row['taskCategory'] . '" data-color="' . $row['taskColor'] . '" data-description="' . $row['taskDescription'] . '">Editar</button>';
+                                echo '<a href="?deleteTaskId=' . $row['id'] . '" class="btn btn-sm btn-danger">Deletar</a>';
+                                echo '</div>';
+                                echo '</li>';
                             }
+                        } else {
+                            echo '<li class="list-group-item">Nenhuma tarefa encontrada.</li>';
+                        }
                         ?>
                     </ul>
                 </div>
@@ -147,14 +140,8 @@ $crudtasks_table = readtask($conn);
 </main>
 
 <script>
-    // Script para mostrar/ocultar o formulário
-    document.getElementById('btn-taskForm').addEventListener('click', function() {
-        var formContainer = document.getElementById('taskFormContainer');
-        formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
-    });
-
-        // Script para preencher formulário com dados de tarefa para edição
-        document.querySelectorAll('.btn-edit').forEach(button => {
+    // Preencher formulário com dados da tarefa para edição
+    document.querySelectorAll('.btn-edit').forEach(button => {
         button.addEventListener('click', function() {
             document.getElementById('editTaskId').value = this.dataset.id;
             document.getElementById('taskTitle').value = this.dataset.title;
@@ -162,11 +149,8 @@ $crudtasks_table = readtask($conn);
             document.getElementById('taskCategory').value = this.dataset.category;
             document.getElementById('taskColor').value = this.dataset.color;
             document.getElementById('taskDescription').value = this.dataset.description;
-
-            document.getElementById('taskFormContainer').style.display = 'block';
         });
     });
 </script>
-
 </body>
 </html>
