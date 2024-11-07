@@ -8,7 +8,9 @@ $database = 'crudtasks_db'; // nome do banco de dados
 
 /* Conexão com o servidor */
 $conn = new mysqli($host, $username, $password, $database)
-    or die("Não foi possível conectar: " . mysqli_error($conn));
+    if ($conn->connect_error) {
+        die("Não foi possível se conectar: " . $conn->connect_error);
+    }
 
 /* CREATE/UPDATE: Colocar nova tarefa no banco de dados */
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
