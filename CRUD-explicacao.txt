@@ -1,0 +1,157 @@
+# Features principais
+
+CRUD - Create, Read, Update, Delete
+
+O objetivo do projeto é criar um CRUD, ou seja, uma aplicação web onde um usuário pode:
+
+- Create: criar um novo dado no banco de dados;
+- Read: ler/visualizar os dados colocados;
+- Update: atualizar um dado no banco de dados;
+- Delete: deletar um dado.
+
+---
+
+## CONEXÃO COM BANCO DE DADOS
+
+```php
+/* CREATE/UPDATE: Colocar nova tarefa no banco de dados */
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    /* Adiciona cada item do formulário com o método post */
+    $taskId = $_POST['editTaskId'];
+    $taskTitle = $_POST['taskTitle'];
+    $taskTime = $_POST['taskTime'];
+    $taskCategory = $_POST['taskCategory'];
+    $taskColor = $_POST['taskColor'];
+    $taskDescription = $_POST['taskDescription'];
+```
+
+Como indicado acima, o método utilizado é post.
+
+Logo, ele vai pegar cada valor inserido no formulário e conectar à tabela (crudtasks_table), que está presente no banco de dados (crudtasks_db).
+
+---
+
+### CREATE:
+
+```php
+    } else { // CREATE: criar uma tarefa
+        $sql = "INSERT INTO crudtasks_table (taskTitle, taskTime, taskCategory, taskColor, taskDescription) 
+                VALUES ('$taskTitle', '$taskTime', '$taskCategory', '$taskColor', '$taskDescription')";
+    }
+```
+
+Para criar a tarefa, caso o usuário não vá editar, o código irá inserir, utilizando sql (INSERT INTO) na tabela (crudtasks_table) que está dentro do banco de dados (crudtasks_db), cada valor colocado no formulário. O nome das variáveis são os mesmos das labels do formulário.
+
+---
+
+### UPDATE:
+
+```php
+	/* Adiciona os valores presentes nas variáveis nas células da tabela */
+	if ($taskId) { // UPDATE: editar uma tarefa já existente
+	$sql = "UPDATE crudtasks_table 
+                SET taskTitle='$taskTitle', taskTime='$taskTime', taskCategory='$taskCategory', 
+                    taskColor='$taskColor', taskDescription='$taskDescription' 
+                WHERE id=$taskId";
+    }
+```
+
+Aqui, ocorre a verificação do ID. Sendo assim, quando selecionada a tarefa, é verificado o id da tarefa e então, é possível editá-la ao ser encontrado.
+
+taskId nesse caso é uma variável booleana.
+
+```php
+echo '<button class="btn btn-sm btn-warning btn-edit me-2" data-id="' . $row['id'] . '" data-title="' . $row['taskTitle'] . '" data-time="' . $row['taskTime'] . '" data-category="' . $row['taskCategory'] . '" data-color="' . $row['taskColor'] . '" data-description="' . $row['taskDescription'] . '">Editar</button>';
+```
+
+Como o botão de editar aparece na tarefa da lista (a váriavel $row é utilizada para verificar a linha da tarefa na tabela).
+
+```php
+<script>
+    /* Preencher formulário com dados da tarefa para edição */
+    document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function() {
+            document.getElementById('taskId').value = this.dataset.id;
+            document.getElementById('taskTitle').value = this.dataset.title;
+            document.getElementById('taskTime').value = this.dataset.time;
+            document.getElementById('taskCategory').value = this.dataset.category;
+            document.getElementById('taskColor').value = this.dataset.color;
+            document.getElementById('taskDescription').value = this.dataset.description;
+        });
+    });
+</script>
+```
+
+Sendo assim, ao clicar no botão editar, o formulário será preenchido com os valores baseados no taskId.
+
+---
+
+### READ:
+
+```php
+/* READ: Função para leitura das tarefas */
+function readtask($conn) {
+    $sql = "SELECT * FROM crudtasks_table";
+    return $conn->query($sql);
+}
+
+$crudtasks_table = readtask($conn);
+```
+
+A função readtask seleciona todos os  dados da crudtasks_table com uma query sql, e então as retorna.
+
+Ao final do código, ela chama a função.
+
+```php
+                        <?php
+                        if ($crudtasks_table->num_rows > 0) { // Se houver pelo menos uma linha na tabela, o que está abaixo é mostrado
+                            while ($row = $crudtasks_table->fetch_assoc()) {
+                                echo '<li class="list-group-item d-flex justify-content-between align-items-start" style="background-color:' . $row['taskColor'] . ';">';
+                                echo '<div>';
+                                echo '<span class="fw-bold">' . $row['taskTitle'] . '</span> - <span class="text-muted">' . $row['taskCategory'] . '</span><br>';
+                                echo '<small class="text-secondary">' . $row['taskTime'] . '</small> - ' . ($row['taskDescription'] ? '<small class="text-secondary">' . $row['taskDescription'] . '</small>' : '');
+                                echo '</div>';
+                                echo '<div>';
+                                echo '<button class="btn btn-sm btn-warning btn-edit me-2" data-id="' . $row['id'] . '" data-title="' . $row['taskTitle'] . '" data-time="' . $row['taskTime'] . '" data-category="' . $row['taskCategory'] . '" data-color="' . $row['taskColor'] . '" data-description="' . $row['taskDescription'] . '">Editar</button>';
+                                echo '<a href="?deletetaskId=' . $row['id'] . '" class="btn btn-sm btn-danger">Deletar</a>';
+                                echo '</div>';
+                                echo '</li>';
+                            }
+                        } else { // Senão, nenhuma tarefa foi encontrada.
+                            echo '<li class="list-group-item">Nenhuma tarefa encontrada.</li>';
+                        }
+                        ?>
+```
+
+Aqui, ele verifica se há linhas na tabela crudtasks_table. Como ela possui a função readtask, a função será acionada e o que está na tabela será exibido em forma de linha, usando a variável $row para criar cada linha.
+
+Utiliza principalmente bootstrap, mas para a cor de fundo, o valor inserido na célula taskColor é utilizado.
+
+Caso não há tarefas, uma tarefa é exibida.
+
+---
+
+### DELETE:
+
+```php
+/* DELETE: deletar uma tarefa pegando o id usando o get */
+if (isset($_GET['deletetaskId'])) {
+    $taskId = $_GET['deletetaskId'];
+    $sql = "DELETE FROM crudtasks_table WHERE id=$taskId";
+    $conn->query($sql);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+```
+
+Aqui, o código verifica se o parâmetro “deletetaskId” foi passado na URL. Esse parâmetro é usado para identificar a tarefa que deve ser excluída. Ou seja, ao clicar no botão deletar, esse parâmetro é acionado.
+
+Ao ser acionado, ele vai deletar da tabela se baseando na taskId com uma query sql, e então, retornar à própria página.
+
+```php
+echo '<a href="?deletetaskId=' . $row['id'] . '" class="btn btn-sm btn-danger">Deletar</a>';
+```
+
+O botão deletetaskId está na lista, em cada tarefa.
+
+---

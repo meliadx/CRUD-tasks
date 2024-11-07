@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 31, 2024 at 08:23 PM
+-- Generation Time: Nov 07, 2024 at 07:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `crudtasks_table` (
-  `id` int(11) NOT NULL,
+  `id` int(200) UNSIGNED NOT NULL,
   `taskTitle` varchar(140) NOT NULL,
   `taskTime` varchar(5) NOT NULL,
   `taskCategory` varchar(100) NOT NULL,
@@ -42,8 +42,7 @@ CREATE TABLE `crudtasks_table` (
 --
 
 INSERT INTO `crudtasks_table` (`id`, `taskTitle`, `taskTime`, `taskCategory`, `taskColor`, `taskDescription`, `taskDateTime`) VALUES
-(65, 'Fazer atividade de Programação Web', '05:00', 'Faculdade', '#fb7474', 'CRUD', '2024-10-31 16:18:45'),
-(66, 'Fazer exercício em C', '00:20', 'Faculdade', '#47cef0', 'Da aula do Caio', '2024-10-31 16:23:17');
+(70, 'Apresentar CRUD', '00:10', 'Faculdade', '#6cf4eb', 'Apresentar o código do CRUD', '2024-11-07 15:44:36');
 
 --
 -- Indexes for dumped tables
@@ -63,7 +62,7 @@ ALTER TABLE `crudtasks_table`
 -- AUTO_INCREMENT for table `crudtasks_table`
 --
 ALTER TABLE `crudtasks_table`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` int(200) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
